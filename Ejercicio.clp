@@ -4,11 +4,13 @@
 ; Indicamos la cantidad maxima de platos que puede llevar para tener reglas mas genericas
 
 (deffacts datos
-    (robot 0 0) (pedidos p 3 3 p 2 2) (recogida r 4 3 r 2 1) (maxCantidad 4) (posConcina 0))
+    (robot 0 0) (pedidos p 3 3 p 2 2) (recogida r 4 3 r 2 1) (maxCantidad 4) (posConcina 0)
+    )
 
-    (defrule entregar 
+    (defrule entrega 
         ?robot <- (robot ?cantidadRobot ?pos)
         ?pedido <- (pedidos $?resto1 p ?cantPedido ?mesa $?resto2)
+        ?recogida <- (recogida $?listaReco)
         ?cocina <- (posConcina ?coc)
         ?maximo <- (maxCantidad ?max)
 
@@ -22,9 +24,11 @@
 
         (retract ?robot)
         (retract ?pedido)
+        (retract ?recogida)
 
         (assert (robot (+ ?cantidadRobot ?cantPedido) ?mesa))
         (assert (pedidos $?resto1 $?resto2))
+        (assert (recogida $?listaReco r ?cantPedido ?mesa))
     )
 
     ;(defrule recoger)
