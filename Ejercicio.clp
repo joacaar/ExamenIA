@@ -4,8 +4,27 @@
 ; Indicamos la cantidad maxima de platos que puede llevar para tener reglas mas genericas
 
 (deffacts datos
-    (robot 0 0) (pedidos p 3 3 p 2 2) (recogida r 4 3 r 2 1) (maxCantidad 4) (posConcina 0)
+
+    (robot 0 0)  (maxCantidad 4) (posConcina 0)
+    ; recoger 3 platos de cocina y llevar a mesa 3
+    (recoger p 3 0 3 p 2 0 2 p 4 3 0 p 2 1 0)
+
+    (mesa 1 2) (mesa 2 0) (mesa 3 4) (mesa 4 0)
     )
+
+    (defrule mover
+    
+        ?robot <- (robot ?cantidadRobot ?pos)
+        ?recogida <- (recoger $?resto1 p ?platos ?origen ?destino $?resto2)
+
+        (test (neq ?pos ?origen))
+
+        =>
+
+        (retract (robot ?cantidadRobot ?origen)
+
+    )
+
 
     (defrule entrega 
         ?robot <- (robot ?cantidadRobot ?pos)
