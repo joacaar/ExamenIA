@@ -12,52 +12,34 @@
     (mesa 1 2) (mesa 2 0) (mesa 3 4) (mesa 4 0)
     )
 
-    (defrule mover
-    
+    (defrule recoger-entregar 
         ?robot <- (robot ?cantidadRobot ?pos)
-        ?recogida <- (recoger $?resto1 p ?platos ?origen ?destino $?resto2)
-
-        (test (neq ?pos ?origen))
-
-        =>
-
-        (retract (robot ?cantidadRobot ?origen)
-
-    )
-
-
-    (defrule entrega 
-        ?robot <- (robot ?cantidadRobot ?pos)
-        ?pedido <- (pedidos $?resto1 p ?cantPedido ?mesa $?resto2)
-        ?recogida <- (recogida $?listaReco)
-        ?cocina <- (posConcina ?coc)
+        ?pedido <- (recoger $?resto1 p ?cantPedido ?origen ?destino $?resto2)
+        ?table <- (mesa ?destino ?cant)
         ?maximo <- (maxCantidad ?max)
 
-        (test (= ?pos ?coc))
-        (test (< (+ ?cantidadRobot ?cantPedido) ?max))
-       
-        =>
+        (test (= ?pos ?origen))
+        (test (= ?cantidadRobot 0))
+        (test (< ?cantPedido ?max))
 
-        (printout t "Robot " (+ ?cantidadRobot ?cantPedido) ?mesa crlf)
-        (printout t "pedidos " $?resto1 $?resto2 crlf)
+        =>
 
         (retract ?robot)
         (retract ?pedido)
-        (retract ?recogida)
-
-        (assert (robot (+ ?cantidadRobot ?cantPedido) ?mesa))
-        (assert (pedidos $?resto1 $?resto2))
-        (assert (recogida $?listaReco r ?cantPedido ?mesa))
+        (retract ?table)
+        (assert (robot 0 ?destino))
+        (assert (pedido $?resto1 $?resto2))
+        (assert (mesa ?destino (+ ?cant ?cantPedido)))
+        
     )
 
-    ;(defrule recoger)
-
-    (defrule final
-        ?pedidos <- (pedidos $?listado)
-        ;?recogidas <- (recogida $?listado2)
-
-        (test (= (length $?listado) 0))
+    (defrule mover
+        ?robot <- (robot ?cantidadRobot ?pos)
+        ?pedido <- (recoger $?resto1 p ?cantPedido ?origen ?destino $?resto2)
 
         => 
-        (halt)
+
+        (retract ?robot)
+        (assert (robot ?cantidadRobot ?origen))
     )
+
