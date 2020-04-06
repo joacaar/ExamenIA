@@ -10,17 +10,17 @@
     (recoger p 3 0 3 p 2 0 2 p 4 3 0 p 2 1 0)
 
     (mesa 1 2) (mesa 2 0) (mesa 3 4) (mesa 4 0)
-    )
+)
 
     (defrule recoger-entregar 
+        (declare (salience 10))
         ?robot <- (robot ?cantidadRobot ?pos)
         ?pedido <- (recoger $?resto1 p ?cantPedido ?origen ?destino $?resto2)
         ?table <- (mesa ?destino ?cant)
         ?maximo <- (maxCantidad ?max)
 
         (test (= ?pos ?origen))
-        (test (= ?cantidadRobot 0))
-        (test (< ?cantPedido ?max))
+        (test (< ?cantPedido ( + ?max 1))
 
         =>
 
@@ -28,14 +28,14 @@
         (retract ?pedido)
         (retract ?table)
         (assert (robot 0 ?destino))
-        (assert (pedido $?resto1 $?resto2))
+        (assert (recoger $?resto1 $?resto2))
         (assert (mesa ?destino (+ ?cant ?cantPedido)))
         
     )
 
     (defrule mover
         ?robot <- (robot ?cantidadRobot ?pos)
-        ?pedido <- (recoger $?resto1 p ?cantPedido ?origen ?destino $?resto2)
+        ?pedido <- (recoger $?restofinal p ?cantPedido ?origen ?destino $?restoinicio)
 
         => 
 
